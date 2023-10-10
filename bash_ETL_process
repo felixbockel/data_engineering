@@ -1,0 +1,75 @@
+#! /bin/bash
+
+#tasks:
+#•  Conditional statements to run commands based on whether a specified condition is true or false
+#•	Logical operators to make true/false operators
+#•	Arithmetic operators to perform basic mathematical calculations
+#•	List-like arrays to store and access data
+#•	for loops to execute repetitive tasks
+
+#MY OWN: 
+
+get_columns=$(find -name *.csv)
+echo "$get_columns"
+#N=2 # numbers of columns because cut
+column_lines=$(( $(head -n1 $get_columns | grep -o "," | wc -l)+1 )) # add 1 because this only counts the comma which is the delimiter and means that it looses 1 count.
+ii=0
+i=0
+for (( i=0; i<=$column_lines-1; i++ )) ;do # there are 3 columns but index counts from 0 therefore N numbers should be n-1 
+    echo "$i"
+    ii=$(($i+1))
+    matrix=($(cut -d "," -f $ii $get_columns)) # numbers for each column
+    if [[ $i == 0 ]]
+    then
+        matrix1=(${matrix[@]})
+        echo "this is column $i with values ${matrix1[@]}"
+    elif [[ $i == 1 ]]
+    then
+        matrix2=(${matrix[@]})
+        echo "this is column $i with values ${matrix2[@]}"
+    else
+        matrix3=(${matrix[@]})
+        echo "this is column $i with values ${matrix3[@]}"
+    fi
+done
+
+#nlines=$(cat $csv_file | wc -l)
+nlines=$(wc -l $get_columns | cut -d " " -f1)
+echo "$nlines"
+for (( i=0; i<=$nlines-1; i++ )) ;do #nlines would run too many lines and therefore need to do -1 here so that csv and txt align and paste to report.csv should work now.
+    matrix4[$i]=$((matrix3[$i]-matrix2[$i]))
+    echo "${matrix4[$i]}"
+    if [[ $i == 0 ]]
+    then
+        matrix1[$i]="hello1"
+        matrix2[$i]="hello2"
+        matrix3[$i]="hello3"
+        matrix4[$i]="difference_of_col2_col1"
+    fi
+    
+done
+
+echo "new header ${matrix1[@]}"
+echo "difference of column3 and 2 ${matrix4[@]}"
+
+#add new column to new file and save it
+#for (( i=0; i<=$nlines; i++ )) ;do 
+#    matrix5[$i]=($matrix1[$i],$matrix2[$i],$matrix3[$i],$matrix4[$i])
+    #echo "${matrix5[$i]}"
+    
+#done
+
+for (( i=0; i<=$nlines-1; i++ )) ;do # nlines would run too many lines and therefore need to do -1 here so that csv and txt align and paste to report.csv should work now.
+    if [[ $i == 0 ]]
+    then
+        echo "${matrix4[$i]}" > matrix4.txt
+        #echo "${matrix4[$i]}"
+    else
+        echo "${matrix4[$i]}" >> matrix4.txt
+    fi
+done
+cat matrix4.txt
+cat $get_columns
+
+paste -d "," $get_columns matrix4.txt > report.csv
+cat report.csv
