@@ -1,0 +1,81 @@
+#!/bin/bash
+
+#backup
+
+# This checks if the number of arguments is correct
+# If the number of arguments is incorrect ( $# != 2) print error message and exit
+if [[ $# != 2 ]]
+then
+  echo "backup.sh target_directory_name destination_directory_name"
+  exit
+fi
+
+# This checks if argument 1 and argument 2 are valid directory paths
+if [[ ! -d $1 ]] || [[ ! -d $2 ]]
+then
+  echo "Invalid directory path provided"
+  exit
+fi
+
+# [TASK 1]
+targetDirectory=$1
+destinationDirectory=$2
+
+# [TASK 2]
+echo "Target Directory: $targetDirectory"
+echo "Destination Directory: $destinationDirectory"
+
+# [TASK 3]
+currentTS=$(date +%S)
+
+# [TASK 4]
+backupFileName="backup-[$currentTS].tar.gz"
+
+# We're going to:
+  # 1: Go into the target directory
+  # 2: Create the backup file
+  # 3: Move the backup file to the destination directory
+
+# To make things easier, we will define some useful variables...
+
+# [TASK 5]
+origAbsPath=$(pwd)
+
+# [TASK 6]
+cd $destinationDirectory # <-
+destDirAbsPath=$(pwd)
+
+# [TASK 7]
+cd $origAbsPath # <-
+
+cd $targetDirectory # <-
+
+# [TASK 8]
+yesterdayTS=$(date -d '24 hours ago' +%s) # last 24hours
+#yesterdayTS=$(date -d '24 hours' +%s) # in 24hours
+
+declare -a toBackup
+
+for file in $(ls) # [TASK 9]
+do
+  last_modified=$(date -r $file +%s) # [TASK 10]
+  if [[ $last_modified > $yesterdayTS ]]
+  then
+    toBackup+=($file)  # [TASK 11]
+  fi
+done
+
+#tar -cf $backupFileName.tar -T /dev/null # create empty tar file
+tar czvf $backupFileName ${toBackup[0]} /dev/null # [TASK 12]
+
+mv $backupFileName $destDirAbsPath # [TASK 13]
+
+# Congratulations! You completed the final project for this course!
+#crontab every every minute 24 hours
+#*/1 * * * * /usr/local/bin/backup.sh /home/project/important-documents /home/project
+# every 24 hours
+#* 0 0 * * * /usr/local/bin/backup.sh /home/project/important-documents /home/project
+#OR
+#* 0 23 * * * /usr/local/bin/backup.sh /home/project/important-documents /home/project
+
+
