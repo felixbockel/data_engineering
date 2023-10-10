@@ -1,0 +1,49 @@
+-- Run your code to replace the stored procedure.
+-- Write and run one query to check that the updated stored procedure works as expected when you use a valid score of 38.
+-- Write and run another query to check that the updated stored procedure works as expected when you use an invalid score of 101.
+
+
+
+
+
+--#SET TERMINATOR @
+CREATE PROCEDURE UPDATE_LEADERS_SCORE_transaction ( 
+    IN in_School_ID INTEGER, IN in_Leader_Score INTEGER)     -- ( { IN/OUT type } { parameter-name } { data-type }, ... )
+
+LANGUAGE SQL                                                -- Language used in this routine
+MODIFIES SQL DATA                                           -- This routine will only write/modify data in the table
+
+BEGIN 
+	IF in_Leader_Score >= 80 AND in_Leader_Score <= 99 THEN                      
+		UPDATE CHICAGO_PUBLIC_SCHOOLS
+	    SET LEADERS_SCORE = in_Leader_Score, LEADERS_ICON = 'Very Strong'
+    	WHERE SCHOOL_ID = in_School_ID;
+       
+    ELSEIF in_Leader_Score >= 60 AND in_Leader_Score <= 79 THEN                      
+		UPDATE CHICAGO_PUBLIC_SCHOOLS
+	    SET LEADERS_SCORE = in_Leader_Score, LEADERS_ICON = 'Strong'
+    	WHERE SCHOOL_ID = in_School_ID;
+        
+    ELSEIF in_Leader_Score >= 40 AND in_Leader_Score <= 59 THEN                      
+		UPDATE CHICAGO_PUBLIC_SCHOOLS
+	    SET LEADERS_SCORE = in_Leader_Score, LEADERS_ICON = 'Average'
+    	WHERE SCHOOL_ID = in_School_ID;
+        
+    ELSEIF in_Leader_Score >= 20 AND in_Leader_Score <= 39 THEN                      
+		UPDATE CHICAGO_PUBLIC_SCHOOLS
+	    SET LEADERS_SCORE = in_Leader_Score, LEADERS_ICON = 'Weak'
+    	WHERE SCHOOL_ID = in_School_ID;
+    	
+    ELSEIF in_Leader_Score >= 0 AND in_Leader_Score <= 19 THEN                      
+		UPDATE CHICAGO_PUBLIC_SCHOOLS
+	    SET LEADERS_SCORE = in_Leader_Score, LEADERS_ICON = 'Very Weak'
+    	WHERE SCHOOL_ID = in_School_ID;               
+    END IF;
+    IF in_Leader_Score > 99 AND in_Leader_Score <0 THEN
+    	ROLLBACK WORK;  --rollback work
+    ELSE
+    	COMMIT WORK;		
+    END IF;                                                         
+END
+@                                                           -- Routine termination
+
