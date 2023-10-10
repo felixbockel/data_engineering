@@ -1,0 +1,139 @@
+#python programming
+#My own exercise of ETL process of Car sales:
+
+!wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-PY0221EN-SkillsNetwork/labs/module%206/Lab%20-%20Extract%20Transform%20Load/data/datasource.zip
+!unzip datasource.zip -d dealership_data
+
+#Exercise:
+import pandas as pd
+import glob
+from datetime import datetime
+
+# files = glob.glob("path/*.csv")
+
+# df = pd.DataFrame()
+# for f in files:
+#     csv = pd.read_csv(f)
+#     df = df.append(csv)
+    
+#About the Data
+#The file dealership_data contains CSV, JSON, and XML files for used car data which contain features named car_model, year_of_manufacture, price, and fuel.
+#Set Paths
+tmpfile    = "dealership_temp.tmp"               # file used to store all extracted data
+logfile    = "dealership_logfile.txt"            # all event logs will be stored in this file
+targetfile = "dealership_transformed_data.csv"   # file where transformed data is stored
+
+#Extract
+#Question 1: CSV Extract Function
+# Add the CSV extract function below
+
+def extract():
+    files = glob.glob("*.csv")
+    dataframe=pd.DataFrame()
+    dataframe2=pd.DataFrame()
+    for f in files:
+        dataframe=pd.read_csv(f)
+        dataframe2=dataframe2.append(dataframe, ignore_index = True)
+    #print('csv')
+    #print(dataframe2)
+    #return dataframe2
+    
+    #Question 2: JSON Extract Function
+    # Add the JSON extract function below
+    files = glob.glob("*.json")
+    dataframe=pd.DataFrame()
+    dataframe3=pd.DataFrame()
+    for f in files:
+        dataframe=pd.read_json(f,lines=True)
+        dataframe3=dataframe3.append(dataframe, ignore_index = True)
+    #print('json')
+    #print(dataframe2)
+    #return dataframe2
+    
+    #Question 3: XML Extract Function
+    # Add the XML extract function below, it is the same as the xml extract function above but the column names need to be renamed.
+    files = glob.glob("*.xml")
+    dataframe4=pd.DataFrame(columns=['car_model','year_of_manufacture','price','fuel'])
+    for f in files:          
+        tree = ET.parse(f)
+        root = tree.getroot()
+        for car in root:
+            car_model = car.find("car_model").text
+            year_of_manufacture = car.find("year_of_manufacture").text
+            price = float(car.find("price").text)
+            fuel = car.find("fuel").text
+            dataframe4 = dataframe4.append({"car_model":car_model, "year_of_manufacture":year_of_manufacture, "price":price, "fuel":fuel}, ignore_index=True)
+    #print('xml')
+    #print(dataframe)
+    #return dataframe
+    
+    #append them all
+    dataframe5=pd.DataFrame()
+    dataframe5=dataframe5.append(dataframe2, ignore_index = True)
+    dataframe5=dataframe5.append(dataframe3, ignore_index = True)
+    dataframe5=dataframe5.append(dataframe4, ignore_index = True)    
+    #print(dataframe5)
+    return dataframe5
+
+# csv_extract()
+# json_extract()
+# xml_extract()
+
+#Transform
+#Question 5: Transform
+#Round the price columns to 2 decimal places
+def transform(data):
+    #csv
+    dataframe=pd.DataFrame()
+    dataframe=data
+    dataframe.price= dataframe.price.round(2)
+    return dataframe
+
+#Loading
+#Question 6: Load
+def load(targetfile,data):
+    data.to_csv(targetfile)
+    
+#Logging
+#Question 7: Log
+#Make sure to change the name of the logfile to the one specified in the set paths section. Change the timestamp order to Hour-Minute-Second-Monthname-Day-Year.
+# Add the log function below
+
+
+def log(message):
+    current_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    with open(logfile, 'a') as f:
+        data = f.write('current time: {}--- message: {}  \n'.format(current_time,message))
+
+# data=extract()
+# data=transform(data)
+# load(targetfile,data)
+# log('message')
+
+
+#Running ETL Process
+#Question 8: ETL Process
+#Run all functions to extract, transform, and load the data. Make sure to log all events using the log function. Place your code under each comment.
+
+# Log that you have started the ETL process
+log('ETL process has started')
+# Log that you have started the Extract step
+log('Extract process has started')
+# Call the Extract function
+data=extract()
+# Log that you have completed the Extract step
+log('Extract process is completed')
+# Log that you have started the Transform step
+log('Transform process has started')
+# Call the Transform function
+data=transform(data)
+# Log that you have completed the Transform step
+log('Transform process is completed')
+# Log that you have started the Load step
+log('Load process has started')
+# Call the Load function
+load(targetfile,data)
+# Log that you have completed the Load step
+log('Load process is completed')
+# Log that you have completed the ETL process
+log('ETL process is completed')
