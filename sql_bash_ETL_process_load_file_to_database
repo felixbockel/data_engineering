@@ -1,0 +1,9 @@
+my own file cp-access-log.sh
+touch cp_file.txt
+cp web-server-access-log.txt cp_file.txt
+cut -d"#" -f1-4 web-server-access-log.txt | tr "#" "," > transformed-data.csv
+#tr "#" "," < web-server-access-log.txt > transformed-data.csv
+
+echo "\c template1;\COPY access_log FROM '/home/project/transformed-data.csv' DELIMITERS ',' CSV HEADER;" | psql --username=postgres --host=localhost
+
+
