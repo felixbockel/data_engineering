@@ -1,0 +1,44 @@
+#python programming
+#Extracting data using API own exercise
+
+# Objectives
+# In this part you will:
+
+# Collect exchange rate data using an API
+# Store the data as a CSV
+# For this lab, we are going to be using Python and several Python libraries. Some of these libraries might be installed in your lab environment or in SN Labs. Others may need to be installed by you. The cells below will install these libraries when executed.
+
+#!mamba install pandas==1.3.3 -y
+#!mamba install requests==2.26.0 -y
+# Imports
+# Import any additional libraries you may need here.
+
+import requests
+import pandas as pd
+# Extract Data Using an API
+# Using ExchangeRate-API we will extract currency exchange rate data. Use the below steps to get the access key and to get the data.
+
+# Open the url : https://exchangeratesapi.io/ and click on Get Free API Key.
+# Subscribe for Free plan and Sign-in with the Google Account.
+# Once the account is created you will be redirected to https://apilayer.com website.
+# Now, click on the user icon and click Account as shown below:
+# Image
+# Scroll down and you will get the API Key section. Copy the API key and use in the url in Question 1.
+# Call the API
+# Question 1 Using the requests library call the endpoint given above and save the text, remember the first few characters of the output:
+
+#url = "https://api.apilayer.com/exchangerates_data/latest?base=EUR&apikey=*****Your API Key*****" #Make sure to change ******* to your API key.
+url = "https://api.apilayer.com/exchangerates_data/latest?base=EUR&apikey=VtFjoRdmyxrsK99BoVQHswFpfqFe6mOU" #Make sure to change ******* to your API key.
+response = requests.get(url)
+data=response.json()
+### Save as DataFrame
+# Question 2 Using the data gathered turn it into a pandas dataframe. The dataframe should have the Currency as the index and Rate as their columns. Make sure to drop unnecessary columns.
+dataframe=pd.DataFrame(data)
+dataframe=dataframe.drop(['success','timestamp','base','date'],axis=1)
+#print(dataframe)
+### Load the Data
+### Using the dataframe save it as a CSV names exchange_rates_1.csv.
+### Save the Dataframe
+filepath='exchange_rates_1.csv'
+dataframe.to_csv(filepath)
+
