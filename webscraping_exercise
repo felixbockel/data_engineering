@@ -1,0 +1,56 @@
+Webscrapping own exercise
+
+# Peer Review Assignment - Data Engineer - Webscraping
+# Estimated time needed: 20 minutes
+# Objectives
+# In this part you will:
+# Use webscraping to get bank information
+# For this lab, we are going to be using Python and several Python libraries. Some of these libraries might be installed in your lab environment or in SN Labs. Others may need to be installed by you. The cells below will install these libraries when executed.
+#!mamba install pandas==1.3.3 -y
+#!mamba install requests==2.26.0 -y
+#!mamba install bs4==4.10.0 -y
+#!mamba install html5lib==1.1 -y
+#Imports
+#Import any additional libraries you may need here.
+
+from bs4 import BeautifulSoup
+import html5lib
+import requests
+import pandas as pd
+#Extract Data Using Web Scraping
+#The wikipedia webpage https://web.archive.org/web/20200318083015/https://en.wikipedia.org/wiki/List_of_largest_banks provides information about largest banks in the world by various parameters. Scrape the data from the table 'By market capitalization' and store it in a JSON file.
+#Webpage Contents
+#Gather the contents of the webpage in text format using the requests library and assign it to the variable html_data
+url='https://web.archive.org/web/20200318083015/https://en.wikipedia.org/wiki/List_of_largest_banks'
+html_data= requests.get(url).text
+# #Question 1 Print out the output of the following line, and remember it as it will be a quiz question:
+print(html_data[760:783])
+#Scraping the Data
+#Question 2 Using the contents and beautiful soup load the data from the By market capitalization table into a pandas dataframe. The dataframe should have the bank Name and Market Cap (US$ Billion) as column names. Display the first five rows using head.
+#Using BeautifulSoup parse the contents of the webpage.
+
+# short cut
+# dataframe_list = pd.read_html(url, flavor='bs4')
+# test=pd.read_html(url, match="10 most densely populated countries", flavor='bs4')[0]
+# print(test)
+
+soup= BeautifulSoup(html_data,"html.parser")
+find_by_market=soup.find_all("table")[2]
+print(len(find_by_market))
+#Load the data from the By market capitalization table into a pandas dataframe. The dataframe should have the bank Name and Market Cap (US$ Billion) as column names. Using the empty dataframe data and the given loop extract the necessary data from each row and append it to the empty dataframe.
+data = pd.DataFrame(columns=["Name", "Market Cap (US$ Billion)"])
+for row in find_by_market.find_all('tr'):
+    col = row.find_all('td')
+    if col!=[]:
+        col_name = col[1].text # store the value in column 3 as col_name
+        col_market_cap = col[2].text # store the value in column 4 as col_market_cap
+        data=data.append({"Name":col_name, "Market Cap (US$ Billion)":col_market_cap}, ignore_index=True)
+print(data)
+#Question 3 Display the first five rows using the head function.
+#Write your code here
+data.head()
+#Loading the Data
+#Load the pandas dataframe created above into a JSON named bank_market_cap.json using the to_json() function.
+#Write your code here
+filepath='bank_market_cap.json'
+data.to_json(filepath)
