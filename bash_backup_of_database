@@ -1,0 +1,34 @@
+#! /bin/bash
+
+keep_day='30'
+DATABASE='sakila'
+
+backupfolder='/home/theia/backups'
+
+echo "Pulling Database: This may take a few minutes"
+echo "$keep_day $DATABASE $backupfolder"
+shfile=$backupfolder/all-database-$(date +%d-%m-%Y_%H-%M-%S).sql
+mysqldump --host=127.0.0.1 --port=3306 --user=root --password=MTcyMS1mZWxpeGJv sakila > $shfile
+#file='/home/project/sakila_mysql_backup.sql'
+last_modified=$(date -r $shfile +%s)
+echo "$shfile $last_modified"
+#mv $zipfile $backupfolder
+# mv DATABASE backupfolder
+zipfile=$backupfolder/all-database-$(date +%d-%m-%Y_%H-%M-%S).gz
+gzip -c $shfile > $zipfile
+
+days30frommodified=$(( $last_modified + (30*24*60*60) )) # 30days
+echo "$last_modified $days30frommodified"
+
+if [[ $last_modified > $days30frommodified ]]
+then
+    rm -i $shfile
+else
+    rm -i sakila_mysql_dump.sql
+    echo "remove completed"
+    echo "add sql back in"
+    
+fi
+
+#/home/project/backup.sh > /home/project/backup.log it saves all output of the script into a log file. good practice!
+
