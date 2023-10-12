@@ -14,7 +14,7 @@
       - bash_ETL_process
       - bash_another_create_run_backup
       - bash_backup_of_database
-      - bash_transform_file_zip_i
+      - bash_transform_file_zip_it
 
 3) SQL stores procedures
    - sql_stored_procedure
