@@ -11,10 +11,10 @@
    - python_webscraping_exercise
      
  2) Shell scripts related ETL processes
-   - bash_ETL_process
-   - bash_another_create_run_backup
-   - bash_backup_of_database
-   - bash_transform_file_zip_i
+      - bash_ETL_process
+      - bash_another_create_run_backup
+      - bash_backup_of_database
+      - bash_transform_file_zip_i
 
 3) SQL stores procedures
    - sql_stored_procedure
